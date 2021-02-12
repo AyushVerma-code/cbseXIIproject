@@ -1,40 +1,33 @@
-//DATABASE MANAGEMENT SYSTEM FOR A COACHING INSTITUTE NAMED FIITJEE MADE BY AYUSH VERMA XII-A ROLL NO-12
+/DATABASE MANAGEMENT SYSTEM FOR A COACHING INSTITUTE NAMED FIITJEE.
 #include<conio.h>
 #include<string.h>
 #include<fstream.h>
 #include<stdio.h>
 #include<process.h>
 #include<iostream.h>
-int minus=0;
 
 class fiitjee 				//class name: fiitjee
-{
-				 //details:it controls overall functioning of fiitjee
+{                                        //details:it controls overall functioning of fiitjee
+	char name[20];
+	char address[50];
+
 	public:
-	void aboutus();
-	void programs();
-	void facilities();
-	void contactus();
-	void enrolment();
-	void turnover();
-
-
-
+	void aboutus(void);
+	void programs(void);
+	void facilities(void);
+	void contactus(void);
+	void enrolment(void);
 
 };
-fiitjee f;
 
 class student
 {
 	char address[50];
 	char name[20];
-     //	int ph[10];
+	int ph[10];
 	int id;
 	public:
-	int dur;
-	char course;
-
-	void getdata(int);
+	void getdata(void);
 	void putdata(void);
 	int getid(void);
 	char* getname()
@@ -44,39 +37,25 @@ class student
 };
 
 
-void student::getdata(int i)                 //function name:getdata
+void student::getdata()                 //function name:getdata
 {
 	cout<<"\n\n\tEnter your name:";      //data of the student
 	gets(name);
 	cout<<"\n\n\tEnter your address:";
 	gets(address);
-
-       id=i;
-
+	cout<<"\n\n\tEnter ID no.(any 3 digit no):";
+	cin>>id;
+    /*	cout<<"\n\n\tEnter Phone Number:";
+	for(int i=0;i<=10;i++)
+		cin>>ph[i]; */
 
 
 }
 
 void student::putdata()
 {
-	cout<<id<<"\t"<<name<<"\t"<<address<<"\t";
-	if(course==1)
-		cout<<"IIT-JEE";
-	else if(course==2)
-		cout<<"FOUNDATIONS";
-	else if(course==3)
-		cout<<"NEET";
-	else if(course==4)
-		cout<<"OTHERS";
-	if(dur==1)
-		cout<<"\t1-YEAR\n";
-	else if(dur==2)
-		cout<<"\t2-YEAR\n";
-	else if(dur==4)
-		cout<<"\t4-YEAR\n";
-
+	cout<<id<<"\t"<<name<<"\t"<<address<<endl;
 	getch();
-
 }
 int student::getid()
 {
@@ -84,32 +63,11 @@ int student::getid()
 }
 student s;
 
-int checkid()
-{
-   ifstream fin("student.dat",ios::binary);
-   student s1;
-   int flag=0,x;
-   while(fin.read((char *)&s1,sizeof(s1)))
-   {
-	x=s1.getid();
-	flag=1;
-   }
-   if(flag==0)
-      x=1;
-   else
-   {
-      ++x;
-   }
-   return x;
-}
-
 
 void write_file()
 {       int pos;
-	int i=checkid();
-	s.getdata(i);              //copying records of student into a file
 	ofstream afile("student.dat",ios::binary|ios::app);
-
+	s.getdata();              //copying records of student into a file
        //	pos=afile.getg();
 	afile.write((char*)&s,sizeof(s));
 
@@ -119,13 +77,12 @@ void write_file()
 void read_file()
 {
 	ifstream bfile("student.dat",ios::binary);
-	cout<<"ID\tNAME\tADDRESS\tCOURSE\tDURATION\n";
+	cout<<"ID\tNAME\tADDRESS\n";
 	while(bfile.read((char*)&s,sizeof(s)))
 	{
 
 		s.putdata();
 	}
-	clrscr();
 	bfile.close();
 }
 void search()
@@ -155,18 +112,17 @@ void search()
 }
 void modify()
 {
-	int p=-1,t=0,i;
-	i=checkid()-1;
+	int p=-1,t=0;
 	int n;
 	cout<<"\n Enter ID student to be modified";
 	cin>>n;
-	fstream dfile("student.dat",ios::binary|ios::in|ios::out);
+	 fstream dfile("student.dat",ios::binary|ios::in|ios::out);
 	while(dfile.read((char*)&s,sizeof(s)))
 	{
 		t++;
 		if(s.getid()==n)
 		{
-			s.getdata(i);
+			s.getdata();
 			dfile.seekp((t-1)*sizeof(s),ios::beg);
 			dfile.write((char*)&s,sizeof(s));
 			p++;
@@ -187,7 +143,7 @@ void Delete()
 	int x;
 	int n;
 	ifstream efile("student.dat",ios::binary|ios::in);
-	ofstream ffile("temp.dat",ios::binary);
+	ofstream ffile("temp.dat",ios::binary|ios::app);
 	if(!efile)
 	{
 		cout<<"\nFile can't be opened";
@@ -197,16 +153,13 @@ void Delete()
 	{
 	cout<<"\nEnter the ID of the student to be deleted:";
 	cin>>n;
-	while(efile.read((char*)&s,sizeof(s)))
-	{
+	while(!efile.eof())
+		{
+			efile.read((char*)&s,sizeof(s));
 			if(s.getid()==n)
-			{
 				strcpy(ch,s.getname());
-				minus=s.dur;
-			}
 			else
 				ffile.write((char*)&s,sizeof(s));
-
 		}
 	}
 	ffile.close();
@@ -221,45 +174,6 @@ void Delete()
 	getch();
 
 
-
-
-}
-void fiitjee::turnover()
-{
-	ifstream fin("student.dat",ios::binary|ios::in);
-	student s1;
-	int yr1=0,yr2=0,yr4=0,turnover=0;
-	int course[4]={0,0,0,0};
-	while(fin.read((char*)&s1,sizeof(s1)))
-	{
-		if(s1.dur==1)
-			yr1++;
-		else if(s1.dur==2)
-			yr2++;
-		else if(s1.dur==4)
-			yr4++;
-
-
-		if(s1.course==1)
-			course[0]++;
-		else if(s1.course==2)
-			course[1]++;
-		else if(s1.course==3)
-			course[2]++;
-		else if(s1.course==4)
-			course[3]++;
-
-
-
-	}
-		turnover=((1*yr1)+(2*yr2)+(4*yr4)-minus);
-		cout<<"\n\tNUMBER OF STUDENT IN IIT JEE:"<<course[0];
-		cout<<"\n\tNUMBER OF STUDENT IN FOUNDATION:"<<course[1];
-		cout<<"\n\tNUMBER OF STUDENT IN NEET:"<<course[2];
-		cout<<"\n\tNUMBER OF STUDENT IN OTHER EXAMS:"<<course[3];
-
-
-		cout<<"\n\tTOTAL TURNOVER IS:"<<turnover<<"LACKS";
 
 
 }
@@ -308,8 +222,6 @@ void fiitjee::programs()
 	clrscr();
 	int b,e,f;
 	char a,i,c,d;
-
-
 	cout<<"\n\t\t\t\tFIITJEE LIMITED\n"<<"\t\t\t\t*************\n"<<"\t\t\t\t*************\n"<<"\t\t\t\t*************\n"<<"\tPrograms offered\n"<<endl;
 	cout<<"\tA)IIT-JEE(1,2,4 year)\n\n\n";
 	cout<<"\tB)Foundation (for class VI,VII,VIII,IX,X)\n\n\n";
@@ -337,22 +249,14 @@ void fiitjee::programs()
 		if((i=='a')||(i=='A'))
 		{
 			cout<<"\t\tYour fees would be ''1LAKH'' for 1 year.";
-
-			s.dur=1;
-			s.course=1;
-
 		}
 		else if((i=='b')||(i=='B'))
 		{
 			cout<<"\t\tYour fees would be ''2lacs'' for 2 years.";
-			s.dur=2;
-			s.course=1;
 		}
 		else if((i=='c')||(i=='C'))
 		{
 			cout<<"\t\tYour fees would be ''4lacs'' for 4 years.";
-			s.dur=4;
-			s.course=1;
 		}
 		else
 		{
@@ -459,26 +363,17 @@ void fiitjee::programs()
 
 			cin>>i;
 			if((i=='a')||(i=='A'))
-		    {
-			cout<<"\t\tYour fees would be ''1LAKH'' for 1 year.";
-			s.dur=1;
-			s.course=2;
 
-		    }
+			cout<<"\t\tYour fees would be ''1LAKH'' for 1 year.";
 
 			else if((i=='b')||(i=='B'))
-		     {
+
 			cout<<"\t\tYour fees would be ''2lacs'' for 2 years.";
-			s.dur=2;
-			s.course=2;
-		     }
 
 			else if((i=='c')||(i=='C'))
-		      {
+
 			cout<<"\t\tYour fees would be ''4lacs'' for 4 years.";
-			s.dur=4;
-			s.course=2;
-		      }
+
 		else
 		{
 			cout<<"\t You have entered wrong choice"
@@ -581,7 +476,7 @@ void fiitjee::programs()
 				cout<<"\n\t\t\t\t FIITJEE LIMITED\n";
 			cout<<"\t\t\t\t\t******\n";
 		cout<<"\t\t\t\t\t******\n";
-		cout<<"\n\t\t\t\t****MEDICAL****";
+		cout<<"\n\t\t\t\t****IIT-JEE****";
 		cout<<"FITTJEE is known as a hub for medical preparations as well."
 		    <<"It gives the aspirants a huge support to enhance their skills and rank in its neet classes";
 		cout<<"\n\n\tPlease select the Duration of the course.\n";
@@ -591,32 +486,20 @@ void fiitjee::programs()
 		cout<<"\tKindly Enter your choice:";
 				cin>>i;
 				if((i=='a')||(i=='A'))
-				{
 					cout<<"Your fees would be 1LAKH for 1 year";
-					s.dur=1;
-					s.course=3;
-				}
 				else if((i=='b')||(i=='B'))
-				{
 					cout<<"Your fees would be 2Lacs for 2 years";
-					s.dur=2;
-					s.course=3;
-				 }
 				else if((i=='c')||(i=='C'))
-				{
 					cout<<"Your fees would be 4Lacs for 4 years";
-					s.dur=4;
-					s.course=3;
-				 }
 				else
 				{
-				cout<<"\t You have entered wrong choice\n"<<"\tPress 1 too re-enter your choice:";
-				cin>>b;
-				if(b==1)
+			cout<<"\t You have entered wrong choice\n"<<"\tPress 1 too re-enter your choice:";
+			cin>>b;
+			if(b==1)
 
-					goto neet;
-				else
-					goto progmenu;
+				goto neet;
+			else
+				goto progmenu;
 		}
 		cout<<"\n\n\n\tWould you like to join our institute?(press y-yes):";
 		cin>>c;
@@ -718,23 +601,11 @@ void fiitjee::programs()
 
 				cin>>i;
 				if((i=='a')||(i=='A'))
-				{
 					cout<<"Your fees would be 1LAKH for 1 year";
-					s.dur=1;
-					s.course=4;
-				}
 				else if((i=='b')||(i=='B'))
-				{
 					cout<<"Your fees would be 2Lacs for 2 years";
-					s.dur=2;
-					s.course=4;
-				 }
 				else if((i=='c')||(i=='C'))
-				{
 					cout<<"Your fees would be 4Lacs for 4 years";
-					s.dur=4;
-					s.course=4;
-				 }
 				else
 				{
 			cout<<"\t you have entered wrong choice\n"<<"\tpress 1 too re-enter your choice";
@@ -877,11 +748,117 @@ void fiitjee::programs()
 			void search();
 			void modify();
 			void Delete();
+
 			int d;
 			char a,b,c;
+
 			Fenrolment:
 			clrscr();
+			cout<<"\n\n\n\t\t\t FIITJEE LIMITED\n"<<"\t\t\t*******\n"<<"\t\t ***************\n\n\n"<<"\t\t\t____________\n\n"<<"\t\t\t|ENROLMENT|\n"<<"\t\t\t___________\n\n\n\n\n\n\n";
+			cout<<"\t\t\tA)1 year admission(yearly)\n\n\n";
+			cout<<"\t\t\tB)2 year admission(2 yearly)\n\n\n";
+			cout<<"\t\t\tC)4 year admission(quarterly)\n\n\n";
+			cout<<"\t\t\tD)FOR ADMINISTRATOR ONLY\n\n\n";
+			cout<<"\t\t\tE)exit\n\n\n";
+			cout<<"\t\t\tkindly enter your choice";
 
+			cin>>a;
+			if((a=='a')||(a=='A'))
+			{
+				clrscr();
+				cout<<"\t\t\t\t*****\n";
+				cout<<"\t\t\t\t*****\n";
+				cout<<"\t\t\t**1-YEAR ENROLMENT****\n\n";
+				cout<<"\n\tYearly enrolment is very useful."
+				    <<"\n\tThe fees for yearly enrolment is 1lac yearly.\n";
+				cout<<"\n\n\n\tWould you like to join the institute??(pressy-yes or n-no):";
+				cin>>b;
+				if(b=='y')
+				{
+					clrscr();
+					cout<<"\t\t\t\t*****\n";
+					cout<<"\t\t\t\t*****\n";
+					cout<<"\t\t\t**FIITJEE LIMITED****\n\n";
+					write_file();
+					cout<<"\n\n\n\n\t\t\tThank you for joining fiitjee !!!"
+					    <<"\n\n\t Press 0 to continue";
+					cin>>d;
+
+					if(d==0)
+						goto Fenrolment;
+					else
+						goto Fenrolment;
+
+				 }
+				 else
+					goto Fenrolment;
+			}
+		      else	if((a=='b')||(a=='B'))
+			{
+				clrscr();
+				cout<<"\t\t\t\t*****\n";
+				cout<<"\t\t\t\t*****\n";
+				cout<<"\t\t\t**2-YEAR ENROLMENT****\n";
+				cout<<"\n\t2 yearly enrolment is also very useful.If you will opt for 2 yearly"
+				    <<"\n\tenrolment then you can get integrated OLYMPIAD COACHING(NSO,IMO,IEO)"
+				    <<"\n\tIn this you will get also some facilities like you can also prepare"
+				    <<"\n\tfor NTSE,JSTSE in extra classes(free of cost).";
+				cout<<"\n\n\n\tWould you like to join the institute??(pressy-yes or n-no):";
+				cin>>b;
+				if(b=='y')
+				{
+					clrscr();
+					cout<<"\t\t\t\t*****\n";
+					cout<<"\t\t\t\t*****\n";
+					cout<<"\t\t\t**FIITJEE LIMITED****\n\n";
+					write_file();
+					cout<<"\n\n\n\n\t\t\tThank you for joining fiitjee !!!"
+					    <<"\n\n\t Press 0 to continue";
+					cin>>d;
+
+					if(d==0)
+						goto Fenrolment;
+					else
+						goto Fenrolment;
+
+				 }
+				 else
+					goto Fenrolment;
+			}
+		      else	if((a=='c')||(a=='C'))
+			{
+				clrscr();
+				cout<<"\t\t\t\t*****\n";
+				cout<<"\t\t\t\t*****\n";
+				cout<<"\t\t\t**4-YEAR ENROLMENT****\n\n";
+				cout<<"\n\tQuarterly enrolment is too very useful.If you will opt for quarterly"
+				    <<"\n\tenrolment then you can get free PG services for first 6 months."
+				    <<"\n\tAlso you automatically get registered for international olympiads"
+				    <<"\n\tlike InPHO, KVPY etc through FIITJEE";
+				cout<<"\n\n\tWould you like to join the institute??(pressy-yes or n-no):";
+				cin>>b;
+				if(b=='y')
+				{
+					clrscr();
+					cout<<"\t\t\t\t*****\n";
+					cout<<"\t\t\t\t*****\n";
+					cout<<"\t\t\t**FIITJEE****\n\n";
+					write_file();
+					cout<<"\n\tThank you for joining FIITJEE !!!\n"
+					<<"\n\tPress 0 to continue:";
+					cin>>d;
+
+					if(d==0)
+						goto Fenrolment;
+					else
+						goto Fenrolment;
+
+				 }
+				 else
+					goto Fenrolment;
+			}
+		       else	if((a=='d')||(a=='D'))
+			{
 				clrscr();
 				cout<<"\tFIITJEE LIMITED\n"<<"\t*************\n"<<"\t*************\n"<<"\t_____________\n"<<"\t|ENROLMENT|\n"<<"\t_____________\n\n"<<"\t*************\n"<<"\t*************\n"<<"\tFOR ADMINISTRATOR ONLY\n"<<"\t*************\n"<<"\t* * * * * * *\n";
 				do
@@ -891,538 +868,11 @@ void fiitjee::programs()
 					cout<<"\n\t\tC).SEARCH STUDENTS\n";
 					cout<<"\n\t\tD).MODIFY STUDENTS\n";
 					cout<<"\n\t\tE).DELETE STUDENTS\n";
-					cout<<"\n\t\tF).STUDENTS IN DIFFERNET COURSE\n";
-					cout<<"\n\t\tG).EXIT\n";
+					cout<<"\n\t\tF).EXIT\n";
 					cout<<"\n\t\tEnter your selection";
 					cin>>c;
 					if((c=='a')||(c=='A'))
-	{
-	progmenu:
-	clrscr();
-	int b,e,f;
-	char a,i,c,d;
-
-
-	cout<<"\n\t\t\t\tFIITJEE LIMITED\n"<<"\t\t\t\t*************\n"<<"\t\t\t\t*************\n"<<"\t\t\t\t*************\n"<<"\tPrograms offered\n"<<endl;
-	cout<<"\tA)IIT-JEE(1,2,4 year)\n\n\n";
-	cout<<"\tB)Foundation (for class VI,VII,VIII,IX,X)\n\n\n";
-	cout<<"\tC)MEDICAL ENTRANCE NEET (1,2,4 year)\n\n\n";
-	cout<<"\tD)Other exams like:SAT,GATE,UPSC,JAM,CAT (2 YEAR)\n\n\n";
-	cout<<"\tE)Exit\n\n\n";
-	cout<<"\tKindly enter your choice:";
-	cin>>a;
-	if((a=='a')||(a=='A'))
-	{
-		iitjee:
-		clrscr();
-		cout<<"\n\t\t\t\t FIITJEE LIMITED\n";
-		cout<<"\t\t\t\t\t******\n";
-		cout<<"\t\t\t\t\t******\n";
-		cout<<"\n\t\t\t\t****IIT-JEE****";
-		cout<<"\n\tFITTJEE is known as the most premier institute for ITT-JEE coaching"
-		<<"\n\tsince ages.It has the privilege of producing top rankers in its classes.";
-		cout<<"\n\n\tPlease select the Duration of the course.\n";
-		cout<<"\t\t\tA) 1 year extended\n";
-		cout<<"\t\t\tB) 2 year\n";
-		cout<<"\t\t\tC) 4 year\n";
-		cout<<"\tKindly enter your choice:";
-		cin>>i;
-		if((i=='a')||(i=='A'))
-		{
-			cout<<"\t\tYour fees would be ''1LAKH'' for 1 year.";
-
-			s.dur=1;
-			s.course=1;
-
-		}
-		else if((i=='b')||(i=='B'))
-		{
-			cout<<"\t\tYour fees would be ''2lacs'' for 2 years.";
-			s.dur=2;
-			s.course=1;
-		}
-		else if((i=='c')||(i=='C'))
-		{
-			cout<<"\t\tYour fees would be ''4lacs'' for 4 years.";
-			s.dur=4;
-			s.course=1;
-		}
-		else
-		{
-			cout<<"\t You have entered wrong choice"
-			<<"\n\tPress 1 too re-enter your choice:";
-			cin>>b;
-			if(b==1)
-				goto iitjee;
-			else
-				goto progmenu;
-		}
-		cout<<"\n\n\n\tWould you like to join our institute?(press y-yes)";
-		cin>>c;
-		if((c=='y')||(c=='Y'))
-		{
-			Fiitjee:
-			clrscr();
-					//data of the candidate
-			cout<<"\t\t\t\t*****\n";
-			cout<<"\t\t\t\t*****\n";
-			cout<<"\t****iit-jee****\n";
-			write_file();
-			cout<<"\n\tEnter suitable time shift(m-morning;e-evening)";
-			cin>>d;
-			if( ( (i=='a')||(i=='A') ) &&( (d=='m')||(d=='M') ) )
-			{
-				cout<<"\n\tYour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tYour days are:- 	Monday,Wednesday,Friday";
-
-			}
-		   else if( ( (i=='a')||(i=='A') ) &&( (d=='e')||(d=='E') ) )
-			{
-				cout<<"\n\tYour timings are-	2 P.M to 6:30P.M ";
-				cout<<"\n\tYour days are:- 	Monday,Wednesday,Friday";
-
-			}
-			else if(((i=='b')||(i=='B'))&&((d=='m')||(d=='M')))
-			{
-				cout<<"\n\tYour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tYour days are:- 	Tuesday,Thursday,Saturday";
-
-			}
-			else if(((i=='b')||(i=='B'))&&((d=='e')||(d=='E')))
-			{
-				cout<<"\n\tYour timings are-	2 P.M to 6:30P.M ";
-				cout<<"\n\tYour days are:-	 Tuesday,Thursday,Saturday ";
-
-			}
-			else if(((i=='c')||(i=='C'))&&((d=='m')||(d=='M')))
-			{
-				cout<<"\n\tyour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tyour day is:- 	Sunday";
-
-			}
-			else if(((i=='c')||(i=='C'))&&((d=='e')||(d=='E')))
-			{
-				cout<<"\n\tyour timings are-	2 P.M to 8 P.M ";
-				cout<<"\n\tyour day is:- 	Sunday";
-
-			}
-			else
-			{
-				cout<<"\n\t you have entered a wrong choice";
-				cout<<"\n\t press 1 to continue:";
-				cin>>e;
-				if(e==1)
-					goto Fiitjee;
-				else
-					goto Fiitjee;
-			}
-			//data of concerned faculty
-
-			cout<<"\n\n\t Faculty (IIT-JEE):";
-			cout<<"\n\t\t Head      MR.RAMESH KAUSHIK";
-			cout<<"\n\t\t Physics   MR.GOPAL SAHU";
-			cout<<"\n\t\t Chemistry MR.LOKESH DIXIT";
-			cout<<"\n\t\t Maths     MR.MANISH PANDEY";
-			cout<<"\n\n\n\n\t\t\t Thank You for joining FITTJEE!!!";
-			cout<<"\n\n\tPress 0 to continue:";
-			cin>>f;
-			if(f==0)
-				goto progmenu;
-			else
-				goto progmenu;
-			}
-
-		}
-		       else	if((a=='b')||(a=='B'))
-			{
-				foundation:
-				clrscr();
-
-			cout<<"\n\t\t\t\t FIITJEE LIMITED\n";
-			cout<<"\t\t\t\t\t******\n";
-			cout<<"\t\t\t\t\t******\n";
-			cout<<"\n\t\t\t\t****FOUNDATION****";
-			cout<<"\n\tFITTJEE is known as a gurukul for foundation courses as well."
-			<<"It gives the beginners a new platform to enhance their skills in its foundation classes.";
-			cout<<"\n\n\tPlease select the Duration of the course.\n";
-			cout<<"\t\t\tA) 1 year extended\n";
-			cout<<"\t\t\tB) 2 year\n";
-			cout<<"\t\t\tC) 4 year\n";
-			cout<<"\tKindly enter your choice:";
-
-			cin>>i;
-			if((i=='a')||(i=='A'))
-		    {
-			cout<<"\t\tYour fees would be ''1LAKH'' for 1 year.";
-			s.dur=1;
-			s.course=2;
-
-		    }
-
-			else if((i=='b')||(i=='B'))
-		     {
-			cout<<"\t\tYour fees would be ''2lacs'' for 2 years.";
-			s.dur=2;
-			s.course=2;
-		     }
-
-			else if((i=='c')||(i=='C'))
-		      {
-			cout<<"\t\tYour fees would be ''4lacs'' for 4 years.";
-			s.dur=4;
-			s.course=2;
-		      }
-		else
-		{
-			cout<<"\t You have entered wrong choice"
-			<<"\n\tPress 1 too re-enter your choice:";
-			cin>>b;
-			if(b==1)
-				goto foundation;
-			else
-				goto progmenu;
-		}
-		cout<<"\n\n\n\t Would you like to join our institute?(press y-yes):";
-		cin>>c;
-		if(c=='y')
-		{
-			Ffoundation:
-			clrscr();
-			//data of the candidate
-			cout<<"\t\t\t\t*****\n";
-			cout<<"\t\t\t\t*****\n";
-			cout<<"\t\t\t****FOUNDATION****\n\n";
-			write_file();
-			cout<<"\n\n\n\tEnter suitable time shift(m-morning;e-evening):";
-			cin>>d;
-
-			if( ( (i=='a')||(i=='A') ) &&( (d=='m')||(d=='M') ) )
-			{
-				cout<<"\n\tYour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tYour days are:- 	Monday,Wednesday,Friday";
-
-			}
-		   else if( ( (i=='a')||(i=='A') ) &&( (d=='e')||(d=='E') ) )
-			{
-				cout<<"\n\tYour timings are-	2 P.M to 6:30P.M ";
-				cout<<"\n\tYour days are:- 	Monday,Wednesday,Friday";
-
-			}
-			else if(((i=='b')||(i=='B'))&&((d=='m')||(d=='M')))
-			{
-				cout<<"\n\tYour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tYour days are:- 	Tuesday,Thursday,Saturday";
-
-			}
-			else if(((i=='b')||(i=='B'))&&((d=='e')||(d=='E')))
-			{
-				cout<<"\n\tYour timings are-	2 P.M to 6:30P.M ";
-				cout<<"\n\tYour days are:- 	Tuesday,Thursday,Saturday ";
-
-			}
-			else if(((i=='c')||(i=='C'))&&((d=='m')||(d=='M')))
-			{
-				cout<<"\n\tYour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tYour day is:- 	Sunday";
-
-			}
-			else if(((i=='c')||(i=='C'))&&((d=='e')||(d=='E')))
-			{
-				cout<<"\n\tYour timings are-	2 P.M to 8 P.M ";
-				cout<<"\n\tYour day is:- 	Sunday";
-
-			}
-			else
-			{
-
-				cout<<"\n\n\t You have entered a wrong choice";
-				cout<<"\n\n\t Press 1 to continue:";
-				cin>>e;
-				if(e==1)
-					goto Ffoundation;
-				else
-					goto Ffoundation;
-			}
-			//data of concerned faculty
-
-			cout<<"\n\n\t Faculty (FOUNDATION):"
-			    <<"\n\t\t Head      MR.AMIT SINGH"
-			    <<"\n\t\t Physics   MRS.PRIYA GUPTA"
-			    <<"\n\t\t Chemistry MR.JAVED KHAN"
-			    <<"\n\t\t Maths 	MR.SUNIL VERMA"
-			    <<"\n\n\t Biology	MRS.PRIYANKA SHARMA"
-			    <<"\n\n\t English	MR.GEORGE PAUL";
-			cout<<"\n\n\n\n\t\t\t Thank You for joining FITTJEE!!!";
-			cout<<"\n\n\tPress 0 to continue:";
-			cin>>f;
-			if(f==0)
-
-				goto progmenu;
-			else
-				goto progmenu;
-
-
-			}
-			else
-			goto progmenu;
-			}
-		     else  if((a=='c')||(a=='C'))
-			{
-				neet:
-				clrscr();
-
-				cout<<"\n\t\t\t\t FIITJEE LIMITED\n";
-			cout<<"\t\t\t\t\t******\n";
-		cout<<"\t\t\t\t\t******\n";
-		cout<<"\n\t\t\t\t****MEDICAL****";
-		cout<<"FITTJEE is known as a hub for medical preparations as well."
-		    <<"It gives the aspirants a huge support to enhance their skills and rank in its neet classes";
-		cout<<"\n\n\tPlease select the Duration of the course.\n";
-		cout<<"\t\t\tA) 1 year extended\n";
-		cout<<"\t\t\tB) 2 year\n";
-		cout<<"\t\t\tC) 4 year\n";
-		cout<<"\tKindly Enter your choice:";
-				cin>>i;
-				if((i=='a')||(i=='A'))
-				{
-					cout<<"Your fees would be 1LAKH for 1 year";
-					s.dur=1;
-					s.course=3;
-				}
-				else if((i=='b')||(i=='B'))
-				{
-					cout<<"Your fees would be 2Lacs for 2 years";
-					s.dur=2;
-					s.course=3;
-				 }
-				else if((i=='c')||(i=='C'))
-				{
-					cout<<"Your fees would be 4Lacs for 4 years";
-					s.dur=4;
-					s.course=3;
-				 }
-				else
-				{
-				cout<<"\t You have entered wrong choice\n"<<"\tPress 1 too re-enter your choice:";
-				cin>>b;
-				if(b==1)
-
-					goto neet;
-				else
-					goto progmenu;
-		}
-		cout<<"\n\n\n\tWould you like to join our institute?(press y-yes):";
-		cin>>c;
-			if(c=='y')
-		{
-			Fneet:
-			clrscr();
-			//data of the candidate
-			cout<<"\t\t*****\n";
-			cout<<"\t\t*****\n";
-			cout<<"\t**NEET****\n\n";
-			cout<<"\t\t*****\n";
-			cout<<"\t\t*****\n";
-			write_file();
-			cout<<"\n\tEnter suitable time shift(m-morning;e-evening):";
-			cin>>d;
-			if( ( (i=='a')||(i=='A') ) &&( (d=='m')||(d=='M') ) )
-			{
-				cout<<"\n\tYour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tYour days are:- 	Monday,Wednesday,Friday";
-
-			}
-		   else if( ( (i=='a')||(i=='A') ) &&( (d=='e')||(d=='E') ) )
-			{
-				cout<<"\n\tYour timings are-	2 P.M to 6:30P.M ";
-				cout<<"\n\tYour days are:- 	Monday,Wednesday,Friday";
-
-			}
-			else if(((i=='b')||(i=='B'))&&((d=='m')||(d=='M')))
-			{
-				cout<<"\n\tYour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tYour days are:- 	Tuesday,Thursday,Saturday";
-
-			}
-			else if(((i=='b')||(i=='B'))&&((d=='e')||(d=='E')))
-			{
-				cout<<"\n\tYour timings are-	2 P.M to 6:30P.M ";
-				cout<<"\n\tYour days are:-	 Tuesday,Thursday,Saturday ";
-
-			}
-			else if(((i=='c')||(i=='C'))&&((d=='m')||(d=='M')))
-			{
-				cout<<"\n\tyour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tyour day is:- 	Sunday";
-
-			}
-			else if(((i=='c')||(i=='C'))&&((d=='e')||(d=='E')))
-			{
-				cout<<"\n\tyour timings are-	2 P.M to 8 P.M ";
-				cout<<"\n\tyour day is:- 	Sunday";
-
-			}
-
-			else
-			{
-				cout<<"\n\n\t You have entered a wrong choice";
-				cout<<"\n\n\t Press 1 to continue:";
-				cin>>e;
-				if(e==1)
-				goto Fneet;
-					else
-					goto Fneet;
-			}
-			//data of concerned faculty
-
-			cout<<"\n\n\t faculty( NEET ):"
-			    <<"\n\t\t Head	MR.PARMINDER SINGH"
-			    <<"\n\t\t Physics 	MRS.ABHAY GUPTA"
-			    <<"\n\t\t Chemistry MR.NAITIK KASHYAP"
-			    <<"\n\n\t Biology 	MRS.NEHA ARORA";
-			cout<<"\n\n\n\n\t\t\t Thank You for joining fiitjee!!!";
-			cout<<"\n\n\tpress 0 to continue:";
-			cin>>f;
-			if(f==0)
-
-				goto progmenu;
-			else
-				goto progmenu;
-
-
-			}
-			else
-			goto progmenu;
-			}
-		    else	if((a=='d')||(a=='D'))
-			{
-				otherexams:
-				clrscr();
-				cout<<"\n\n\n\t\t\t\t FIITJEE LIMITED\n";
-				cout<<"\t\t\t\t******\n";
-				cout<<"\t\t\t\t******\n";
-				cout<<"\t\t****OTHEREXAMS****\n";
-				cout<<"\t FITTJEE is also famous for other preparations as well.It gives the\n"<<"\n\tstudents proper coaching for exams like SAT,GATE,UPSC,JAM,CAT";
-				cout<<"\t\t\tEXAMS:--\n";
-				cout<<"\t\t\tA) SAT,GATE\n";
-				cout<<"\t\t\tB) UPSC\n";
-				cout<<"\t\t\tC)CAT,JAM\n";
-				cout<<"Enter your choice:";
-
-				cin>>i;
-				if((i=='a')||(i=='A'))
-				{
-					cout<<"Your fees would be 1LAKH for 1 year";
-					s.dur=1;
-					s.course=4;
-				}
-				else if((i=='b')||(i=='B'))
-				{
-					cout<<"Your fees would be 2Lacs for 2 years";
-					s.dur=2;
-					s.course=4;
-				 }
-				else if((i=='c')||(i=='C'))
-				{
-					cout<<"Your fees would be 4Lacs for 4 years";
-					s.dur=4;
-					s.course=4;
-				 }
-				else
-				{
-			cout<<"\t you have entered wrong choice\n"<<"\tpress 1 too re-enter your choice";
-			cin>>b;
-			if(b==1)
-
-				goto otherexams;
-			else
-				goto progmenu;
-		}
-		cout<<"\n\n\n\t Would you like to join our institute?(press y-yes):";
-		cin>>c;
-		if(c=='y')
-		{
-			Fotherexams:
-			clrscr();
-			//data of the candidate
-			cout<<"\t\t\t\t*****\n";
-			cout<<"\t\t\t\t*****\n";
-			cout<<"\t\t\t**OTHEREXAMS****\n\n";
-			write_file();
-			cout<<"\n\tEnter suitable time shift(m-morning;e-evening):";
-			cin>>d;
-
-		       if( ( (i=='a')||(i=='A') ) &&( (d=='m')||(d=='M') ) )
-			{
-				cout<<"\n\tYour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tYour days are:- 	Monday,Wednesday,Friday";
-
-			}
-		   else if( ( (i=='a')||(i=='A') ) &&( (d=='e')||(d=='E') ) )
-			{
-				cout<<"\n\tYour timings are-	2 P.M to 6:30P.M ";
-				cout<<"\n\tYour days are:- 	Monday,Wednesday,Friday";
-
-			}
-			else if(((i=='b')||(i=='B'))&&((d=='m')||(d=='M')))
-			{
-				cout<<"\n\tYour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tYour days are:- 	Tuesday,Thursday,Saturday";
-
-			}
-			else if(((i=='b')||(i=='B'))&&((d=='e')||(d=='E')))
-			{
-				cout<<"\n\tYour timings are-	2 P.M to 6:30P.M ";
-				cout<<"\n\tYour days are:- 	Tuesday,Thursday,Saturday ";
-
-			}
-			else if(((i=='c')||(i=='C'))&&((d=='m')||(d=='M')))
-			{
-				cout<<"\n\tYour timings are-	9 A.M to 1:30P.M ";
-				cout<<"\n\tYour day is:- 	Sunday";
-
-			}
-			else if(((i=='c')||(i=='C'))&&((d=='e')||(d=='E')))
-			{
-				cout<<"\n\tYour timings are-	2 P.M to 8 P.M ";
-				cout<<"\n\tYour day is:- 	Sunday";
-
-			}
-
-			else
-			{
-				cout<<"\n\n\t you have entered a wrong choice";
-				cout<<"\n\n\t press 1 to continue";
-				cin>>e;
-				if(e==1)
-					goto Fotherexams;
-			     else
-					goto Fotherexams;
-			}
-			//data of concerned faculty
-
-			cout<<"\n\n\t faculty(OTHEREXAMS):"
-				<<"\n\t\t Head		MR.MADHAV GHOSH"
-				<<"\n\t\tSAT/GATE 	MR.ROHAN VATS"
-				<<"\n\t\t UPSC 		MR.RANJAN KUMAR"
-				<<"\n\t\t CAT/JAM 	MR.SANJAY KHURANA";
-			cout<<"\n\n\n\n\t\t\t thank you for joining fiitjee!!!";
-			cout<<"\n\n\tpress 0 to continue";
-			cin>>f;
-			if(f==0)
-
-				goto progmenu;
-			else
-				goto progmenu;
-
-
-			}
-			else
-				goto progmenu;
-			}
-	}
-
-
+						write_file();
 					else if((c=='b')||(c=='B'))
 						read_file();
 					else if((c=='c')||(c=='C'))
@@ -1431,11 +881,8 @@ void fiitjee::programs()
 						modify();
 					else if((c=='e')||(c=='E'))
 						Delete();
-					else if((c=='f')||(c=='F'))
-						turnover();
-					else if((c=='g')||(c=='G'))
-						exit(0);
-
+					else	if((c=='f')||(c=='F'))
+						goto Fenrolment;
 					else
 					{
 						cout<<"Wrong choice entered";
@@ -1443,30 +890,30 @@ void fiitjee::programs()
 						goto Fenrolment;
 					}
 
-				  }while((c!='b')||(c!='B'));
-		 }
-	void main()
-	{       char choice;
-		clrscr();
+				  }while((c!='f')||(c!='F'));
+
+
+			  }
+
+		}
+		void main()
+		{
+			//starting page
+			clrscr();
 			cout<<"\n\n\n\t\t\t\t   12TH PROJECT"
 			    <<"\n\n\t\t\tBY AYUSH VERMA && HEMONESH"
 			    <<"\n\n\t\t\t\tSESSION: 2019-2020";
 			getch();
 			clrscr();
-
-
+			mainmenu:
 
 			clrscr();
 			char h;
 			char x,j;
-		cout<<"\t\tWHO ARE YOU:\n\n\n";
-		cout<<"\t  A) STUDENT\n\n\n";
-		cout<<"\t  B) ADMINISTRATOR\n\n\n";
-		cout<<"\t  C) EXIT\n\n\n";
-		cin>>choice;
-		if((choice=='a')||(choice=='A'))
-		{
-			mainmenus:
+			fiitjee f;
+
+			//main options
+
 
 			cout<<"\n\t************************\n"<<"\t * __________________ *\n"<<"\t * _________________ *\n"<<"\t*                 *\n"<<" F I I T J E E  L I M I T E D  \n"<<"\t * ______________ *\n"<<"\t * ____________________*\n"<<"\t   *                      *  \n";
 			cout<<"\t * FIITJEE LIMITED, 29-A, KALU SARAI\n"<<"\t\t SARVAPRIYA VIHAR, NEAR HAUZ KHAS METRO STATION\n"<<"\t\t PH NO-011-49383471 * \n";
@@ -1475,33 +922,61 @@ void fiitjee::programs()
 			cout<<"\t  A) ABOUT US\n\n\n";
 			cout<<"\t  B) PROGRAMS OFFERED\n\n\n";
 			cout<<"\t  C) FACILITIES\n\n\n";
-			cout<<"\t  D) CONTACT US\n\n\n";
-			cout<<"\t  E) EXIT\n\n";
+			cout<<"\t  D) ENROLMENT\n\n\n";
+			cout<<"\t  E) CONTACT US\n\n\n";
+			cout<<"\t  F) EXIT\n\n";
 			cout<<"\t  ENTER YOUR CHOICE:";
 			cin>>h;
-		}
-		else if((choice=='B')||(choice=='b'))
-		{
-			       f.enrolment();
-		}
-		else if((choice=='c')||(choice=='C'))
-			exit(0);
+			//for going to specified option
 
-		if(h=='a'||h=='A')
+			if(h=='a'||h=='A')
 				f.aboutus();
 			if(h=='b'||h=='B')
 				f.programs();
 			if(h=='c'||h=='C')
 				f.facilities();
 			if(h=='d'||h=='D')
-				f.contactus();
+				f.enrolment();
 			if(h=='e'||h=='E')
+				f.contactus();
+			if(h=='f'||h=='F')
 				exit(0);
 			else //if(h!=1&&h!=2&&h!=3&&h!=5&&h!=4&&h!=6)
-				goto mainmenus;
-
+				goto mainmenu;
 			getch();
-}
+
+		 }
+
+
+
+
+		//*************END OF PROJECT******************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
